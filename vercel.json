@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_GOOGLE_API_KEY": "@google_api_key",
+    "GOOGLE_API_KEY": "@google_api_key",
+    "ZALO_OA_TOKEN": "@zalo_oa_token",
+    "ZALO_OA_ID": "@zalo_oa_id",
+    "ZALO_SECRET_KEY": "@zalo_secret_key",
+    "NEXT_PUBLIC_BASE_URL": "@base_url"
+  }
+}
