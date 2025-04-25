@@ -1,0 +1,102 @@
+1 Block 1: BookingInput Component
+Tạo file components/BookingInput.tsx.
+
+Mở file và nhấn Cmd+K → paste prompt sau:
+
+pgsql
+Copy
+Edit
+Generate a React Server Component named BookingInput for Next.js on Vercel. 
+UI spec: Full-width textarea (height 120px, border-radius 8px) with placeholder “Paste booking info…”. 
+Below it, a primary button “Submit” in color #FF5A5F with spinner animation (200ms). 
+On click, call @google/generative-ai SDK to parse the text into JSON schema.
+Accept code Cursor gợi ý, review props và import SDK 
+Spoken Like A Geek
+.
+
+3.2 Block 2: ParsedReviewForm
+Tạo file components/ParsedReviewForm.tsx.
+
+Ctrl+K → paste prompt:
+
+pgsql
+Copy
+Edit
+Generate ParsedReviewForm: a card-style form using React Hook Form.
+Fields: customer, concepts, hours, deposit, total, phone, date. 
+Each has label (Roboto 14px) and input with inline edit icon. 
+Use spacing 8px and subtle shadow.
+Accept và kiểm tra tính năng edit inline 
+Cursor - Community Forum
+.
+
+3.3 Block 3: CalendarAddButton
+Tạo file components/CalendarAddButton.tsx.
+
+Ctrl+K → prompt:
+
+pgsql
+Copy
+Edit
+Generate CalendarAddButton component.
+UI: full-width primary button “Add to Calendar” (#FF5A5F) and secondary link “Edit Details”.
+On click, call googleapis Calendar v3 to insert event with props: summary, start, end.
+After success, show toast slide-in at top (300ms).
+Accept code, kiểm thử gọi Calendar API .
+
+3.4 Block 4: InvoiceMaker
+Tạo file components/InvoiceMaker.tsx.
+
+Ctrl+K → prompt:
+
+pgsql
+Copy
+Edit
+Generate InvoiceMaker component.
+UI: gallery grid of 5 template thumbnails (200×120px, hover scale 1.05), 
+upload logo area (200×200px), color picker, and live preview canvas sized 1920×1080.
+Button “Generate PDF” calls PDFKit to merge selected template and data.
+Accept, kiểm tra import pdfkit và cách set page size .
+
+3.5 Block 5: SendInvoiceStatus
+Tạo file components/SendInvoiceStatus.tsx.
+
+Ctrl+K → prompt:
+
+vbnet
+Copy
+Edit
+Generate SendInvoiceStatus component.
+UI: list of statuses [“Generated”, “Sent via Zalo”] with spinner/tick icons.
+Button “Resend” triggers zalo-api OA.message with file URL from props.
+On success, animate tick (250ms).
+Accept code, kiểm thử gửi message .
+
+3.6 Block 6: Deployment Config
+Tạo vercel.json or edit next.config.js.
+
+Ctrl+K → prompt:
+
+vbnet
+Copy
+Edit
+Generate vercel.json to set environment variables GOOGLE_API_KEY and ZALO_OA_TOKEN, 
+and configure build command “npm run build” for Next.js App Router.
+Accept và deploy lên Vercel.
+
+##4. Tips & Best Practices
+Viết test trước khi code để Cursor có mục tiêu rõ ràng: “Write Jest tests for BookingInput first” 
+Builder.io
+.
+
+Dùng chat panel (Ctrl+L) khi cần tạo hoặc refactor đa file, đưa cả context folder vào chat 
+Cursor - Community Forum
+.
+
+Craft prompts iteratively: gửi prompt đơn giản, review, rồi refine thêm chi tiết (Andrew Ng’s “lazy prompting” cũng hỗ trợ quick iterations) 
+Business Insider
+.
+
+Giữ prompts ngắn gọn và chỉ tập trung vào block hiện tại để tránh overload AI 
+Reddit
+.

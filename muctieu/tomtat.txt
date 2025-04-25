@@ -1,0 +1,17 @@
+Block	Chức năng	SDK / Library	UI Spec tóm tắt
+1. Booking Input	Nhận text thô → gọi Gemini phân tích JSON schema	@google/generative-ai (Google Gen AI SDK) 
+npm
+Google Cloud
+Textarea full-width, placeholder “Paste booking info…”, primary button “Submit” với spinner
+2. Parsed Review	Hiển thị form các field đã parse, cho chỉnh sửa	React + React Hook Form (hoặc Formik)	Card form, label + input, edit icon, spacing 8 px
+3. Calendar Add	Tạo sự kiện Google Calendar	googleapis (Calendar API) 
+Google Cloud
+Button “Add to Calendar”, toast notification slide-in
+4. Invoice Maker	Chọn template & upload logo → generate PDF	PDFKit (Node.js PDF generation) 
+Stack Overflow
+PDFKit
+Gallery 5 template, upload button, color picker, live preview canvas 1920×1080
+5. Send Invoice	Gửi PDF qua Zalo OA (ZNS)	zalo-api (kyled7/zalo-api) 
+GitHub
+List trạng thái, icons, button “Resend”, tick animation
+6. Deployment	Deploy lên Vercel, cấu hình environment variables	Vercel CLI / GitHub Actions	Next.js App Router
