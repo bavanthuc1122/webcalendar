@@ -5,8 +5,9 @@ import { useForm, Controller } from 'react-hook-form';
 
 interface ParsedData {
   customer: string;
-  concepts: string;
-  hours: number;
+  concepts?: string;
+  time: string;
+  duration: number;
   deposit: number;
   total: number;
   phone: string;
@@ -22,7 +23,8 @@ export default function ParsedReviewForm({ data, onBack }: ParsedReviewFormProps
   const [isEditing, setIsEditing] = useState<Record<string, boolean>>({
     customer: false,
     concepts: false,
-    hours: false,
+    time: false,
+    duration: false,
     deposit: false,
     total: false,
     phone: false,
@@ -66,7 +68,7 @@ export default function ParsedReviewForm({ data, onBack }: ParsedReviewFormProps
                     value={field.value}
                     onChange={(e) => {
                       let value = e.target.value;
-                      if (key === 'hours' || key === 'deposit' || key === 'total') {
+                      if (key === 'duration' || key === 'deposit' || key === 'total') {
                         field.onChange(value === '' ? '' : Number(value));
                       } else {
                         field.onChange(value);
@@ -113,6 +115,8 @@ export default function ParsedReviewForm({ data, onBack }: ParsedReviewFormProps
             Lưu thông tin
           </button>
         </div>
+
+
       </form>
     </div>
   );
@@ -122,7 +126,8 @@ function getLabelByKey(key: string): string {
   const labels: Record<string, string> = {
     customer: 'Tên khách hàng',
     concepts: 'Ý tưởng chụp',
-    hours: 'Số giờ chụp',
+    time: 'Giờ bắt đầu',
+    duration: 'Thời lượng (giờ)',
     deposit: 'Tiền đặt cọc',
     total: 'Tổng chi phí',
     phone: 'Số điện thoại',
