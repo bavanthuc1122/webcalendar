@@ -1,0 +1,58 @@
+## Tiến trình chuyển đổi từ localStorage sang MongoDB
+
+### Giai đoạn 1: Thiết lập cơ sở dữ liệu và API cơ bản
+- [x] Cài đặt các gói phụ thuộc cần thiết: mongoose, mongodb, next-auth, react-query, bcrypt
+- [x] Tạo file cấu hình kết nối MongoDB (lib/mongodb/index.ts)
+- [x] Tạo các schema MongoDB cho các collections:
+  - [x] Bookings (models/Booking.ts)
+  - [x] Customers (models/Customer.ts)
+  - [x] Invoices (models/Invoice.ts)
+  - [x] Settings (models/Setting.ts)
+  - [x] Reports (models/Report.ts)
+  - [x] Users (models/User.ts)
+- [x] Xây dựng API Routes cơ bản (CRUD):
+  - [x] /api/bookings
+  - [x] /api/customers
+  - [x] /api/invoices
+  - [x] /api/settings
+  - [x] /api/reports
+  - [x] /api/users
+- [x] Cập nhật lib/db.ts để sử dụng MongoDB thay vì localStorage (lib/db-mongodb.ts)
+- [x] Tạo script chuyển đổi dữ liệu từ localStorage sang MongoDB (scripts/migrate-to-mongodb.ts)
+- [x] Tạo trang web để chuyển đổi dữ liệu từ localStorage sang MongoDB (app/migrate/page.tsx)
+
+### Giai đoạn 2: Triển khai xác thực người dùng
+- [x] Thiết lập NextAuth.js (app/api/auth/[...nextauth]/route.ts)
+- [x] Tạo trang đăng nhập (app/auth/login/page.tsx)
+- [x] Tạo trang đăng ký (app/auth/register/page.tsx)
+- [x] Tạo middleware để bảo vệ các routes (middleware.ts)
+
+### Giai đoạn 3: Cập nhật các components để sử dụng MongoDB
+- [ ] Cập nhật BookingForm.tsx
+- [ ] Cập nhật SessionCompletionForm.tsx
+- [ ] Cập nhật CustomerList.tsx
+- [ ] Cập nhật InvoiceMaker.tsx
+
+### Giai đoạn 4: Triển khai tính năng tự động hóa
+- [ ] Gửi email tự động khi hoàn thành buổi chụp
+- [ ] Tạo báo cáo doanh thu hàng ngày/tuần/tháng
+- [ ] Đồng bộ với Google Calendar
+
+### Giai đoạn 5: Triển khai tính năng sao lưu và khôi phục dữ liệu
+- [ ] Tạo API routes cho việc sao lưu và khôi phục dữ liệu
+- [ ] Tạo giao diện người dùng cho tính năng này
+
+### Giai đoạn 6: Kiểm thử và sửa lỗi
+- [ ] Kiểm tra tất cả các tính năng
+- [ ] Sửa lỗi nếu có
+
+### Giai đoạn 7: Triển khai lên môi trường sản xuất
+- [ ] Cấu hình biến môi trường cho môi trường sản xuất
+- [ ] Triển khai lên Vercel hoặc nền tảng khác
+
+
+
+
+
+làm việc với tôi nhận nhiệm vụ phải phân tích và liệt kê tiến trinh sẽ sửa và cập nhật quá trình sửa
+

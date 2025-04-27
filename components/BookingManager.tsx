@@ -3,35 +3,31 @@
 import { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { BookingData, getAllBookings, deleteBooking } from '../lib/db';
+import { useBookings, BookingData } from '@/lib/hooks';
+import Toast from './Toast';
 
 interface BookingManagerProps {
   onSelectBooking?: (booking: BookingData) => void;
 }
 
 export default function BookingManager({ onSelectBooking }: BookingManagerProps) {
+  const { bookings: bookingsData, isLoading, error, refetch, deleteBooking, isDeleting } = useBookings();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [bookings, setBookings] = useState<BookingData[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<BookingData | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [sortBy, setSortBy] = useState<'date' | 'customer' | 'status'>('date');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
-
-  // Tải danh sách đặt lịch khi component được tải
-  useEffect(() => {
-    loadBookings();
-  }, []);
-
-  // Tải danh sách đặt lịch
-  const loadBookings = () => {
-    const allBookings = getAllBookings();
-    setBookings(allBookings);
-  };
+  const [toast, setToast] = useState({
+    message: '',
+    type: 'success' as 'success' | 'error',
+    isVisible: false
+  });
 
   // Mở modal
   const openModal = () => {
-    loadBookings();
+    refetch(); // Tải lại danh sách booking
     setIsOpen(true);
   };
 
@@ -53,12 +49,22 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
   };
 
   // Xóa đặt lịch
-  const handleDeleteBooking = (id: string) => {
+  const handleDeleteBooking = async (id: string) => {
     if (confirmDelete === id) {
-      const success = deleteBooking(id);
-      if (success) {
-        loadBookings();
+      try {
+        await deleteBooking(id);
+        setToast({
+          message: 'Đã xóa lịch hẹn thành công',
+          type: 'success',
+          isVisible: true
+        });
         setConfirmDelete(null);
+      } catch (error) {
+        setToast({
+          message: `Lỗi: ${error.message || 'Không thể xóa lịch hẹn'}`,
+          type: 'error',
+          isVisible: true
+        });
       }
     } else {
       setConfirmDelete(id);
@@ -66,37 +72,39 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
   };
 
   // Lọc và sắp xếp đặt lịch
-  const filteredBookings = bookings
-    .filter(booking => {
-      // Lọc theo trạng thái
-      if (filterStatus !== 'all' && booking.status !== filterStatus) {
-        return false;
-      }
-      
-      // Lọc theo từ khóa tìm kiếm
-      if (!searchTerm) return true;
-      
-      const searchLower = searchTerm.toLowerCase();
-      return (
-        booking.customer.toLowerCase().includes(searchLower) ||
-        booking.phone.includes(searchTerm) ||
-        (booking.concepts && booking.concepts.toLowerCase().includes(searchLower))
-      );
-    })
-    .sort((a, b) => {
-      if (sortBy === 'date') {
-        // Sắp xếp theo ngày
-        const dateA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}`);
-        const dateB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}`);
-        return dateB.getTime() - dateA.getTime();
-      } else if (sortBy === 'customer') {
-        // Sắp xếp theo tên khách hàng
-        return a.customer.localeCompare(b.customer);
-      } else {
-        // Sắp xếp theo trạng thái
-        return a.status.localeCompare(b.status);
-      }
-    });
+  const filteredBookings = bookingsData
+    ? bookingsData
+        .filter(booking => {
+          // Lọc theo trạng thái
+          if (filterStatus !== 'all' && booking.status !== filterStatus) {
+            return false;
+          }
+
+          // Lọc theo từ khóa tìm kiếm
+          if (!searchTerm) return true;
+
+          const searchLower = searchTerm.toLowerCase();
+          return (
+            booking.customer.toLowerCase().includes(searchLower) ||
+            booking.phone.includes(searchTerm) ||
+            (booking.concepts && booking.concepts.toLowerCase().includes(searchLower))
+          );
+        })
+        .sort((a, b) => {
+          if (sortBy === 'date') {
+            // Sắp xếp theo ngày
+            const dateA = new Date(`${a.date.split('/').reverse().join('-')}T${a.time}`);
+            const dateB = new Date(`${b.date.split('/').reverse().join('-')}T${b.time}`);
+            return dateB.getTime() - dateA.getTime();
+          } else if (sortBy === 'customer') {
+            // Sắp xếp theo tên khách hàng
+            return a.customer.localeCompare(b.customer);
+          } else {
+            // Sắp xếp theo trạng thái
+            return a.status.localeCompare(b.status);
+          }
+        })
+    : [];
 
   // Định dạng trạng thái
   const formatStatus = (status: string) => {
@@ -116,6 +124,13 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
 
   return (
     <>
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
+      />
+
       <button
         type="button"
         onClick={openModal}
@@ -193,7 +208,18 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
                   </div>
 
                   <div className="max-h-96 overflow-y-auto">
-                    {filteredBookings.length > 0 ? (
+                    {isLoading ? (
+                      <div className="flex justify-center py-8">
+                        <svg className="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      </div>
+                    ) : error ? (
+                      <div className="text-center py-8 text-red-500">
+                        Lỗi: {error}
+                      </div>
+                    ) : filteredBookings.length > 0 ? (
                       <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                           <tr>
@@ -216,7 +242,7 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {filteredBookings.map((booking) => (
-                            <tr key={booking.id} className="hover:bg-gray-50">
+                            <tr key={booking.id || booking._id} className="hover:bg-gray-50">
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="text-sm font-medium text-gray-900">{booking.customer}</div>
                                 <div className="text-sm text-gray-500">{booking.phone}</div>
@@ -242,14 +268,15 @@ export default function BookingManager({ onSelectBooking }: BookingManagerProps)
                                   Chọn
                                 </button>
                                 <button
-                                  onClick={() => handleDeleteBooking(booking.id)}
+                                  onClick={() => handleDeleteBooking(booking.id || booking._id as string)}
                                   className={`${
-                                    confirmDelete === booking.id
+                                    confirmDelete === (booking.id || booking._id)
                                       ? 'text-red-600 font-bold'
                                       : 'text-gray-600 hover:text-red-900'
                                   }`}
+                                  disabled={isDeleting}
                                 >
-                                  {confirmDelete === booking.id ? 'Xác nhận xóa?' : 'Xóa'}
+                                  {confirmDelete === (booking.id || booking._id) ? 'Xác nhận xóa?' : 'Xóa'}
                                 </button>
                               </td>
                             </tr>

@@ -81,17 +81,39 @@ export async function POST(request: NextRequest) {
        .lineWidth(1)
        .stroke();
 
-    // Dịch vụ chụp ảnh
-    doc.fontSize(10)
-       .text(`Dịch vụ chụp ảnh (${bookingData.duration} giờ)`, 50, 240)
-       .text(`${bookingData.total.toLocaleString('vi-VN')}đ`, 450, 240, { align: 'right' });
+    // Kiểm tra xem có dịch vụ tùy chỉnh không
+    let yPos = 240;
 
-    // Concept nếu có
-    let yPos = 260;
-    if (bookingData.concepts) {
-      doc.text(`Concept: ${bookingData.concepts}`, 50, yPos)
-         .text('-', 450, yPos, { align: 'right' });
+    if (bookingData.customService) {
+      // Dịch vụ chính
+      doc.fontSize(10)
+         .text(bookingData.customService.name, 50, yPos)
+         .text(`${bookingData.customService.price.toLocaleString('vi-VN')}đ`, 450, yPos, { align: 'right' });
+
       yPos += 20;
+
+      // Các dịch vụ bổ sung
+      if (bookingData.customService.additionalServices && bookingData.customService.additionalServices.length > 0) {
+        bookingData.customService.additionalServices.forEach(service => {
+          doc.text(service.name || 'Dịch vụ bổ sung', 50, yPos)
+             .text(`${service.price.toLocaleString('vi-VN')}đ`, 450, yPos, { align: 'right' });
+          yPos += 20;
+        });
+      }
+    } else {
+      // Dịch vụ chụp ảnh mặc định
+      doc.fontSize(10)
+         .text(`Dịch vụ chụp ảnh (${bookingData.duration} giờ)`, 50, yPos)
+         .text(`${bookingData.total.toLocaleString('vi-VN')}đ`, 450, yPos, { align: 'right' });
+
+      yPos += 20;
+
+      // Concept nếu có
+      if (bookingData.concepts) {
+        doc.text(`Concept: ${bookingData.concepts}`, 50, yPos)
+           .text('-', 450, yPos, { align: 'right' });
+        yPos += 20;
+      }
     }
 
     // Tổng cộng
@@ -113,10 +135,16 @@ export async function POST(request: NextRequest) {
        .stroke();
 
     yPos += 10;
+
+    // Tính số tiền còn lại dựa trên dịch vụ tùy chỉnh hoặc mặc định
+    const totalAmount = bookingData.customService
+      ? bookingData.customService.total
+      : bookingData.total;
+
     doc.fontSize(12)
        .fillColor(accentColor || '#FF5A5F')
        .text('Còn lại:', 50, yPos)
-       .text(`${(bookingData.total - bookingData.deposit).toLocaleString('vi-VN')}đ`, 450, yPos, { align: 'right' });
+       .text(`${(totalAmount - bookingData.deposit).toLocaleString('vi-VN')}đ`, 450, yPos, { align: 'right' });
 
     // Thêm thông tin thanh toán và mã QR nếu có
     const paymentYPos = yPos + 40; // Đặt vị trí cho phần thanh toán dưới phần tổng cộng
@@ -171,13 +199,30 @@ export async function POST(request: NextRequest) {
     // Ở đây, chúng ta giả định rằng file được lưu vào thư mục public
     const publicDir = path.join(process.cwd(), 'public', 'invoices');
 
-    // Tạo thư mục nếu chưa tồn tại
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
+    try {
+      // Tạo thư mục nếu chưa tồn tại
+      if (!fs.existsSync(publicDir)) {
+        fs.mkdirSync(publicDir, { recursive: true });
+      }
 
-    // Lưu file
-    fs.writeFileSync(path.join(publicDir, fileName), pdfBuffer);
+      // Lưu file
+      fs.writeFileSync(path.join(publicDir, fileName), pdfBuffer);
+
+      console.log(`Đã lưu file PDF thành công: ${fileName}`);
+    } catch (fsError) {
+      console.error('Lỗi khi lưu file PDF:', fsError);
+
+      // Nếu không thể lưu file, trả về dữ liệu PDF dưới dạng base64
+      const base64Data = pdfBuffer.toString('base64');
+      const dataUrl = `data:application/pdf;base64,${base64Data}`;
+
+      return NextResponse.json({
+        success: true,
+        pdfUrl: dataUrl,
+        fileName,
+        isDataUrl: true
+      });
+    }
 
     // Trả về URL của file
     const pdfUrl = `/invoices/${fileName}`;

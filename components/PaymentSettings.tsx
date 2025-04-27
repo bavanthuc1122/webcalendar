@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { QRCodeCanvas } from 'qrcode.react';
 
 interface PaymentInfo {
   bankName: string;
@@ -52,69 +51,45 @@ export default function PaymentSettings({ onSave, initialPaymentInfo }: PaymentS
     }));
   };
 
-  // Tạo QR code dựa trên thông tin thanh toán
+  // Tạo QR code dựa trên thông tin thanh toán sử dụng VietQR
   const generateQRCode = () => {
-    // Format: bankName|accountNumber|accountName|amount|description
-    const qrContent = [
-      paymentInfo.bankName,
-      paymentInfo.accountNumber,
-      paymentInfo.accountName,
-      paymentInfo.amount || '',
-      paymentInfo.description || ''
-    ].join('|');
+    if (!paymentInfo.bankName || !paymentInfo.accountNumber || !paymentInfo.accountName) {
+      return;
+    }
 
-    // Tạo QR code và lưu dưới dạng data URL
     try {
-      // Tạo một div tạm thời để render QR code
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.left = '-9999px';
-      document.body.appendChild(tempDiv);
+      // Lấy mã ngân hàng từ code
+      const bankCode = paymentInfo.bankName;
 
-      // Render QR code vào div
-      const qrCanvas = document.createElement('canvas');
-      qrCanvas.width = 300;
-      qrCanvas.height = 300;
-      tempDiv.appendChild(qrCanvas);
+      // Tạo URL VietQR
+      let vietQRUrl = `https://img.vietqr.io/image/${bankCode}-${paymentInfo.accountNumber}-compact.png`;
 
-      // Sử dụng QRCodeCanvas để vẽ QR code
-      const qrCode = new QRCodeCanvas({
-        value: qrContent,
-        size: 300,
-        level: 'H',
-        bgColor: '#FFFFFF',
-        fgColor: '#000000',
-      });
+      // Thêm thông tin nếu có
+      const params = new URLSearchParams();
 
-      // Lấy data URL từ canvas
-      if (qrCanvas) {
-        const ctx = qrCanvas.getContext('2d');
-        if (ctx) {
-          // Vẽ nền trắng
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, 300, 300);
-
-          // Vẽ QR code
-          ctx.fillStyle = '#000000';
-          const cellSize = 300 / 33; // Kích thước ô QR code
-          for (let row = 0; row < 33; row++) {
-            for (let col = 0; col < 33; col++) {
-              if (Math.random() > 0.7) { // Giả lập QR code
-                ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-              }
-            }
-          }
-
-          setQrDataURL(qrCanvas.toDataURL('image/png'));
-        }
+      if (paymentInfo.amount) {
+        params.append('amount', paymentInfo.amount.toString());
       }
 
-      // Xóa div tạm thời
-      document.body.removeChild(tempDiv);
+      if (paymentInfo.description) {
+        params.append('addInfo', paymentInfo.description);
+      }
+
+      // Thêm tên người nhận
+      params.append('accountName', paymentInfo.accountName);
+
+      // Nếu có tham số, thêm vào URL
+      const queryString = params.toString();
+      if (queryString) {
+        vietQRUrl += `?${queryString}`;
+      }
+
+      // Lưu URL của mã QR
+      setQrDataURL(vietQRUrl);
     } catch (error) {
       console.error('Error generating QR code:', error);
 
-      // Tạo một QR code giả để demo
+      // Tạo một QR code giả để demo trong trường hợp lỗi
       const canvas = document.createElement('canvas');
       canvas.width = 300;
       canvas.height = 300;
@@ -195,38 +170,36 @@ export default function PaymentSettings({ onSave, initialPaymentInfo }: PaymentS
         Cài đặt thanh toán
       </button>
 
-      <Transition appear show={isOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={closeModal}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
+      <Dialog open={isOpen} onClose={closeModal} className="relative z-10">
+        <Transition
+          show={isOpen}
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition>
 
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title
-                    as="h3"
-                    className="text-lg font-medium leading-6 text-gray-900 mb-4"
-                  >
-                    Cài đặt thông tin thanh toán
-                  </Dialog.Title>
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition
+              show={isOpen}
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900 mb-4">
+                  Cài đặt thông tin thanh toán
+                </Dialog.Title>
 
                   <div className="flex justify-between mb-4">
                     <button
@@ -394,11 +367,10 @@ export default function PaymentSettings({ onSave, initialPaymentInfo }: PaymentS
                     </button>
                   </div>
                 </Dialog.Panel>
-              </Transition.Child>
+              </Transition>
             </div>
           </div>
         </Dialog>
-      </Transition>
     </>
   );
 }

@@ -465,7 +465,7 @@ export default function PromptManager({ onSelectPrompt, onSavePrompt }: PromptMa
                         </label>
                         <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 mb-2">
                           <p className="text-xs text-gray-600">
-                            <strong>Hướng dẫn:</strong> Sử dụng <code className="bg-gray-200 px-1 rounded">{{input}}</code> để chèn văn bản đầu vào từ người dùng. Prompt nên bao gồm các hướng dẫn rõ ràng về cách phân tích dữ liệu và định dạng kết quả trả về.
+                            <strong>Hướng dẫn:</strong> Sử dụng <code className="bg-gray-200 px-1 rounded">{"{{input}}"}</code> để chèn văn bản đầu vào từ người dùng. Prompt nên bao gồm các hướng dẫn rõ ràng về cách phân tích dữ liệu và định dạng kết quả trả về.
                           </p>
                           <div className="mt-2 text-xs">
                             <p className="font-medium text-gray-700">Ví dụ về cấu trúc prompt tốt:</p>

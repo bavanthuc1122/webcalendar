@@ -1,5 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { QueryClientProvider } from '../components/providers/QueryClientProvider';
+import { SettingsProvider } from '../lib/contexts/SettingsContext';
 
 export const metadata: Metadata = {
   title: 'Web Calendar - Quản lý đặt lịch',
@@ -20,7 +22,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
+        <QueryClientProvider>
+          <SettingsProvider>
+            {children}
+          </SettingsProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

@@ -1,0 +1,139 @@
+# Nhiệm vụ cải thiện UI và quản lý cấu hình
+
+## Yêu cầu chính
+1. Cải thiện UI hiển thị cấu hình đã lưu:
+   - [x] Thêm badge "Đã lưu" bên cạnh các trường đã có dữ liệu
+   - [x] Thêm thời gian cập nhật gần nhất để người dùng biết khi nào cấu hình được cập nhật
+   - [x] Thêm nút "Khôi phục mặc định" để người dùng có thể quay lại cấu hình mặc định
+
+2. Thêm tính năng quản lý cấu hình:
+   - [x] Cải thiện tab cấu hình hiện có trong CustomerList
+   - [ ] Cho phép người dùng xem lịch sử cấu hình và khôi phục cấu hình cũ
+   - [ ] Cho phép người dùng xuất/nhập cấu hình để sao lưu hoặc chuyển đổi giữa các môi trường
+
+3. Thêm tính năng kiểm tra cấu hình:
+   - [x] Thêm nút "Kiểm tra kết nối" cho cấu hình email, Google Sheet để người dùng có thể kiểm tra cấu hình trước khi lưu
+   - [x] Hiển thị kết quả kiểm tra chi tiết để người dùng có thể sửa lỗi
+
+4. Tối ưu hóa hiệu suất:
+   - [x] Sử dụng React Query để cache dữ liệu và giảm số lượng requests
+   - [x] Thêm prefetching để tải dữ liệu trước khi người dùng mở trang cấu hình
+   - [ ] Tối ưu kết nối MongoDB với batch requests
+   - [x] Tự đóng kết nối MongoDB khi không sử dụng
+   - [x] Lưu data tại trình duyệt để giảm API calls
+
+5. Cải thiện trải nghiệm người dùng:
+   - [x] Thêm tooltips giải thích các trường cấu hình
+   - [x] Thêm validation cho các trường input để tránh lỗi khi lưu
+   - [ ] Thêm auto-save để tự động lưu cấu hình khi người dùng thay đổi
+
+## Kế hoạch triển khai
+1. Cải thiện UI hiển thị cấu hình trong CustomerList:
+   - [x] Cập nhật UI của tab cấu hình Google Sheet
+   - [ ] Cập nhật UI của tab cấu hình Hóa đơn
+   - [x] Cập nhật UI của tab cấu hình Email
+   - [x] Thêm các components UI cần thiết (badge, tooltip, validation)
+
+2. Thêm tính năng kiểm tra cấu hình:
+   - [x] Tạo API endpoints để kiểm tra kết nối Google Sheet
+   - [x] Thêm UI hiển thị kết quả kiểm tra
+
+3. Thêm tính năng xuất/nhập cấu hình:
+   - [ ] Thêm nút xuất cấu hình
+   - [ ] Thêm nút nhập cấu hình
+   - [ ] Thêm modal để xem và tải xuống cấu hình
+
+4. Tối ưu hóa hiệu suất:
+   - [ ] Cải thiện cơ chế batch requests
+   - [x] Tối ưu caching ở phía client
+
+## Tiến độ triển khai
+- Ngày bắt đầu: 2023-08-15
+- Trạng thái: Đang triển khai
+- Đã hoàn thành:
+  1. Cập nhật UI của tab cấu hình Google Sheet với badge, tooltip, validation
+  2. Cập nhật UI của tab cấu hình Email với badge, tooltip, validation
+  3. Thêm tính năng kiểm tra kết nối Google Sheet
+  4. Thêm nút "Khôi phục mặc định" cho các cấu hình
+  5. Hiển thị thời gian cập nhật gần nhất
+- Cần triển khai:
+  1. Cập nhật UI của tab cấu hình Hóa đơn
+  2. ✅ Thêm tính năng xuất/nhập cấu hình (Đã triển khai ngày 16/08/2023)
+     - Đã tạo API endpoint /api/settings/export để xuất cấu hình
+     - Đã tạo API endpoint /api/settings/import để nhập cấu hình
+     - Đã tạo component SettingsExportImport để xử lý xuất/nhập cấu hình
+     - Đã thêm UI cho xuất/nhập cấu hình vào CustomerList.tsx
+  3. Thêm tính năng auto-save
+  4. ✅ Tối ưu hóa batch requests (Đã triển khai ngày 16/08/2023)
+     - Đã cập nhật API endpoint /api/batch để hỗ trợ nhiều loại batch requests
+     - Đã tạo hook useBatchRequests để xử lý batch requests
+     - Đã thêm hỗ trợ cho customers, bookings và invoices
+  5. ✅ Thêm tính năng xem lịch sử cấu hình (Đã triển khai ngày 15/08/2023)
+     - Đã tạo model SettingHistory để lưu trữ lịch sử cấu hình
+     - Đã cập nhật API endpoint settings để lưu lịch sử khi cấu hình thay đổi
+     - Đã tạo API endpoint để lấy lịch sử cấu hình theo loại
+     - Đã tạo API endpoint để khôi phục cấu hình cũ
+     - Đã tạo component SettingsHistory để hiển thị lịch sử cấu hình
+     - Đã thêm UI cho xem lịch sử cấu hình vào CustomerList.tsx
+  6. ✅ Sửa lỗi (Đã triển khai ngày 16/08/2023)
+     - Đã sửa lỗi thông tin thanh toán không được lưu vào MongoDB
+     - Đã sửa lỗi "Unexpected end of JSON input" khi xem lịch sử cấu hình
+     - Đã sửa lỗi khi khôi phục cấu hình mặc định
+     - Đã thêm chức năng xóa khách hàng chờ
+     - Đã sửa lỗi cấu hình Google Calendar không lưu vào MongoDB
+     - Đã cải thiện luồng cấu hình Google Calendar và Google Sheet với nút kiểm tra kết nối
+     - Đã sửa lỗi "ctr is not a constructor" khi kết nối Google Calendar API
+     - Đã sửa lỗi "Login Required" khi kiểm tra kết nối Google Calendar
+     - Đã sửa lỗi "Method doesn't allow unregistered callers" khi kiểm tra kết nối Google Calendar
+     - Đã sửa lỗi "API keys are not supported by this API" khi kiểm tra kết nối Google Calendar
+     - Đã chuyển từ API Key sang OAuth2 cho Google Calendar API
+     - Đã cải thiện UI hiển thị trạng thái kết nối (lưu và hiển thị trạng thái kết nối)
+     - Đã cải thiện thông tin sự kiện khi thêm vào Google Calendar
+     - Đã sửa lỗi "Invalid time value" khi thêm sự kiện vào Google Calendar bằng cách:
+       + Sử dụng định dạng RFC3339 UTC (YYYY-MM-DDTHH:MM:SSZ) cho thời gian
+       + Chỉ sử dụng một cách chỉ định múi giờ (dateTime với 'Z' + timeZone riêng)
+       + Thêm kiểm tra tính hợp lệ của định dạng RFC3339 và yêu cầu định dạng UTC
+       + Thêm kiểm tra tính hợp lệ của ngày tháng
+       + Cải thiện xử lý lỗi với thông tin chi tiết
+     - Đã sửa lỗi parse ngày tháng khi định dạng ngày là YYYY-MM-DD thay vì DD/MM/YYYY
+     - Đã sửa lỗi "releaseConnection is not a function" trong app/api/add-to-calendar/route.ts
+     - Đã sửa lỗi "releaseConnection is not a function" trong app/api/settings/route.ts
+     - Đã cải thiện quá trình xác thực OAuth2 cho Google Calendar:
+       + Thêm API endpoint để xử lý callback từ Google OAuth2
+       + Cập nhật GoogleAuthSettings.tsx để xử lý quá trình xác thực OAuth2
+       + Thêm trang success và error để xử lý kết quả từ quá trình xác thực
+       + Lưu refresh token vào MongoDB để sử dụng lâu dài
+     - Đã sửa lỗi mất dữ liệu khi quay về trang chủ sau khi xác thực OAuth2:
+       + Cập nhật CalendarAddButton.tsx để kiểm tra cả apiKey và refreshToken khi xác định isConfigured
+       + Cập nhật GoogleAuthSettings.tsx để lưu trạng thái xác thực sau khi quay về từ trang success
+       + Thêm log để debug quá trình xác thực và lưu cấu hình
+     - Đã cải thiện quá trình xác thực OAuth2 để mở tab mới:
+       + Mở tab mới khi xác thực OAuth2 thay vì chuyển hướng trong cùng tab
+       + Thêm cơ chế polling để kiểm tra MongoDB định kỳ và biết khi nào xác thực hoàn tất
+       + Cập nhật UI khi xác thực hoàn tất
+       + Thêm log chi tiết để debug quá trình xác thực và lưu cấu hình
+     - Đã cải thiện cơ chế polling để phát hiện refresh token trong MongoDB:
+       + Thêm log chi tiết trong quá trình polling
+       + Giảm thời gian giữa các lần kiểm tra từ 5 giây xuống 3 giây
+       + Thêm log chi tiết trong API endpoint add-to-calendar
+       + Thêm log chi tiết trong API endpoint auth/callback/google
+     - Đã xóa trường API Key trong GoogleAuthSettings.tsx vì không cần thiết:
+       + Xóa trường nhập API Key
+       + Cập nhật điều kiện kích hoạt nút "Kiểm tra kết nối" để chỉ yêu cầu Client ID
+     - Đã sửa lỗi nhiều cấu hình Google Calendar gây nhầm lẫn:
+       + Thêm API endpoint reset-google-calendar để xóa tất cả cấu hình hiện có
+       + Cập nhật API endpoint auth/callback/google để xóa tất cả cấu hình hiện có trước khi tạo cấu hình mới
+       + Cập nhật cơ chế polling để tìm kiếm refresh token chính xác hơn
+       + Sửa lỗi cú pháp trong GoogleAuthSettings.tsx
+     - Đã sửa lỗi chuyển đổi session khi nhấp vào nút "Thêm vào Google Calendar":
+       + Thêm event.preventDefault() vào hàm handleAddToCalendar
+       + Thêm event.preventDefault() vào hàm handleAddBatchToCalendar
+       + Cập nhật kiểu tham số event để có thể xử lý sự kiện click
+       + Vô hiệu hóa tự động chuyển đổi session sau khi thêm sự kiện vào lịch thành công
+     - Đã cải thiện giao diện người dùng theo yêu cầu:
+       + Xóa các nút không cần thiết trong CalendarAddButton.tsx (Chỉnh sửa chi tiết, Tiếp tục, Bỏ qua)
+       + Hiển thị thêm thông tin trong phần "Xem trước sự kiện" (số điện thoại, tiền đặt cọc, tổng chi phí)
+       + Thêm tính năng chỉnh sửa sự kiện trong danh sách lịch hẹn đã phân tích
+       + Thêm checkbox để người dùng có thể chọn lịch nào muốn thêm vào lịch
+       + Cập nhật nút "Thêm tất cả vào lịch" thành "Thêm vào lịch" và chỉ thêm các lịch hẹn đã được chọn
+     - Đã cải thiện xử lý lỗi khi thêm sự kiện vào Google Calendar

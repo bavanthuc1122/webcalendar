@@ -1,0 +1,36 @@
+input tôi nhập ngẫu nhiên là hoàng thuỳ 950k thu 800 sdt 092712647 10h 25.5.2025 
+nhưng output lọc qua gemnini chưa đúng nhé
+cần đảm bảo đúng với các trường cua google callendar 
+
+Tên sự kiện
+Ngày giờ kết thúc 30p-2h tuỳ setup 
+Mô tả
+
+
+
+
+
+tôi sẽ phân tích input như sau
+
+950k = 950.000vnđ 
+tên sự kiện sẽ là tên Khách Hàng 
+Hoàng Thuỳ
+Thời gian sẽ là: 25/05/2025 bắt đầu 10:00AM - 12:00PM
+10h = 10:00AM nhé
+nếu 10h30 sẽ là = 10:30AM
+
+còn các phần còn laị sẽ thêm vào ghi chú mô tả vì google calendar k có các event khác ngoài Tên sự kiện thời gian mô tả
+tôi sẽ thêm như sau
+
+Mô tả:  950k thu 800 sdt 092712647
+lọc ra sẽ là
+
+950k 
+Thu 800k 
+SĐT KH: 092712647
+
+
+bạn hiểu chưa
+
+Hiện tại chưa có nut button add calendar
+hiện tại dự án đã hoản thành tới block vào rồi và còn thiếu block nào nữa hãy đề xuất để hoàn thiện thêm
